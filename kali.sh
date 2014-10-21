@@ -5,6 +5,8 @@
 #  Personal post install script for Kali Linux.         #
 #-Author(s)---------------------------------------------#
 #  g0tmilk ~ http://blog.g0tmi1k.com                    #
+#-Modified----------------------------------------------#
+#  milports                                             #
 #-Operating System--------------------------------------#
 #  Designed for: Kali Linux 1.0.9 [x64] (VM - VMware)   #
 #     Tested on: Kali Linux 1.0.0 - 1.0.9 [x64 & x84]   #
@@ -28,16 +30,12 @@
 
 if [ 1 -eq 0 ]; then        # This is never true, thus it acts as block comments ;)
 ############ One liner - Pull the latest version and execute! ###########
-wget -qO- https://raw.github.com/g0tmi1k/os-scripts/master/kali.sh | bash
+wget -qO- https://raw.github.com/milports/os-scripts/master/kali.sh | bash
 #########################################################################
 fi
 
-
-
-keyboardlayout="gb"         # Great Britain
-timezone="Europe/London"    # London, Europe
-
-
+keyboardlayout="us"
+timezone="Australia/Sydney"
 
 ##### (Optional) Setup remote connection via SSH
 #services ssh start          # Start SSH to allow for remote connection
@@ -183,8 +181,6 @@ fi
 
 ##### Updating location information (keyboard layout & time zone) - set either value to "" to skip.
 echo -e "\e[01;32m[+]\e[00m Updating location information (keyboard layout & time zone)"
-#keyboardlayout="gb"         # Great Britain
-#timezone="Europe/London"    # London, Europe
 #--- Configure keyboard layout
 if [ ! -z "$keyboardlayout" ]; then
   file=/etc/default/keyboard; [ -e $file ] && cp -n $file{,.bkup}
@@ -217,15 +213,15 @@ apt-get update && apt-get -y -q dist-upgrade --fix-missing
 
 
 ##### Fixing audio issues
-echo -e "\e[01;32m[+]\e[00m Fixing audio issues"
+#echo -e "\e[01;32m[+]\e[00m Fixing audio issues"
 #--- PulseAudio warnings
 #file=/etc/default/pulseaudio; [ -e $file ] && cp -n $file{,.bkup}
 #sed -i 's/^PULSEAUDIO_SYSTEM_START=.*/PULSEAUDIO_SYSTEM_START=1/' $file
 #--- Unmute on startup
-apt-get -y -qq install alsa-utils
+#apt-get -y -qq install alsa-utils
 #--- Set volume now
-amixer set Master unmute >/dev/null
-amixer set Master 50% >/dev/null
+#amixer set Master unmute >/dev/null
+#amixer set Master 50% >/dev/null
 
 
 ##### Configuring grub
@@ -250,11 +246,11 @@ update-grub
 
 
 ##### Configuring startup (randomize the hostname, eth0 & wlan0s MAC address)
-#echo -e "\e[01;32m[+]\e[00m Configuring startup (randomize the hostname, eth0 & wlan0s MAC address)"
+echo -e "\e[01;32m[+]\e[00m Configuring startup (randomize the hostname, eth0 & wlan0s MAC address)"
 #--- Start up
-#file=/etc/rc.local; [ -e $file ] && cp -n $file{,.bkup}
-#grep -q "macchanger" $file 2>/dev/null || sed -i 's#^exit 0#for INT in eth0 wlan0; do\n  ifconfig $INT down\n  '$(whereis macchanger)' -r $INT \&\& sleep 3\n  ifconfig $INT up\ndone\n\n\nexit 0#' $file
-#grep -q "hostname" $file 2>/dev/null || sed -i 's#^exit 0#'$(whereis hostname)' $(cat /dev/urandom | tr -dc "A-Za-z" | head -c8)\nexit 0#' $file
+file=/etc/rc.local; [ -e $file ] && cp -n $file{,.bkup}
+grep -q "macchanger" $file 2>/dev/null || sed -i 's#^exit 0#for INT in eth0 wlan0; do\n  ifconfig $INT down\n  '$(whereis macchanger)' -r $INT \&\& sleep 3\n  ifconfig $INT up\ndone\n\n\nexit 0#' $file
+grep -q "hostname" $file 2>/dev/null || sed -i 's#^exit 0#'$(whereis hostname)' $(cat /dev/urandom | tr -dc "A-Za-z" | head -c8)\nexit 0#' $file
 #--- On demand (kinda broken)
 ##file=/etc/init.d/macchanger; [ -e $file ] && cp -n $file{,.bkup}
 ##echo -e '#!/bin/bash\nfor INT in eth0 wlan0; do\n  echo "Randomizing: $INT"\n  ifconfig $INT down\n  macchanger -r $INT\n  sleep 3\n  ifconfig $INT up\n  echo "--------------------"\ndone\nexit 0' > $file
@@ -875,8 +871,8 @@ apt-get -y -qq install htop
 
 
 ##### Installing glance ~ cli process viewer
-#echo -e "\e[01;32m[+]\e[00m Installing glance"
-#apt-get -y -qq install glance
+echo -e "\e[01;32m[+]\e[00m Installing glance"
+apt-get -y -qq install glance
 
 
 ##### Installing axel ~ cli download manager
